@@ -32,11 +32,9 @@ def run():
 threading.Thread(target=run, daemon=True).start()
 
 # ==================================================
-# BOT CONFIGURATION & ADMIN ID
+# BOT CONFIGURATION & ADMIN ID (Token Hidden)
 # ==================================================
-BOT_TOKEN = os.environ.get(
-    'BOT_TOKEN', '8717201146:AAFTD0CpFcaUVgLJf25gKNd3ieTgxRRRiSg'
-)
+BOT_TOKEN = os.environ.get('BOT_TOKEN')
 ADMIN_ID = 7132512163  # আপনার টেলিগ্রাম আইডি
 
 # ==================================================
@@ -55,8 +53,8 @@ REQUIRED_CHANNELS = [
     },
     {
         'name': '📢 Channel 3',
-        'chat_id': '@viral_video1538',
-        'url': 'https://t.me/viral_video1538',
+        'chat_id': '@viral_video543',
+        'url': 'https://t.me/viral_video543',
     },
     {
         'name': '📢 Channel 4',
@@ -173,7 +171,6 @@ async def check_all_channels(bot, user_id):
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
   user = update.effective_user
 
-  # নতুন ইউজার /start দিলে অ্যাডমিন নোটিফিকেশন যাবে
   try:
     username = f'@{user.username}' if user.username else 'নেই'
     await context.bot.send_message(
@@ -260,7 +257,6 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     verified = await check_all_channels(context.bot, user.id)
 
     if verified:
-      # ইউজার সফলভাবে ভেরিফাই করলে অ্যাডমিনের কাছে মেসেজ যাবে
       try:
         username = f'@{user.username}' if user.username else 'নেই'
         await context.bot.send_message(
@@ -308,7 +304,6 @@ async def join_request_handler(
 
   user = request.from_user
 
-  # প্রাইভেট চ্যানেলে রিকোয়েস্ট পাঠালেও অ্যাডমিনের কাছে মেসেজ যাবে
   try:
     username = f'@{user.username}' if user.username else 'নেই'
     await context.bot.send_message(
@@ -350,6 +345,12 @@ async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE):
 # MAIN
 # ==================================================
 def main():
+  if not BOT_TOKEN:
+    raise RuntimeError(
+        "BOT_TOKEN পাওয়া যায়নি! দয়া করে Render Environment Variables-এ"
+        ' BOT_TOKEN সেট করুন।'
+    )
+
   app = Application.builder().token(BOT_TOKEN).build()
 
   app.add_handler(CommandHandler('start', start))
