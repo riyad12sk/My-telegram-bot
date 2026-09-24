@@ -32,8 +32,9 @@ def run():
 threading.Thread(target=run, daemon=True).start()
 
 # ==================================================
-# BOT CONFIGURATION & ADMIN ID (Token Hidden)
+# BOT CONFIGURATION & ADMIN ID
 # ==================================================
+# Render Environment Variable থেকে টোকেন নেবে
 BOT_TOKEN = os.environ.get('BOT_TOKEN')
 ADMIN_ID = 7132512163  # আপনার টেলিগ্রাম আইডি
 
