@@ -1,7 +1,7 @@
+from http.server import BaseHTTPRequestHandler, HTTPServer
 import logging
 import os
 import threading
-from flask import Flask
 
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.constants import ChatMemberStatus
@@ -13,28 +13,34 @@ from telegram.ext import (
     ContextTypes,
 )
 
+
 # ==================================================
-# FLASK KEEP-ALIVE SERVER
+# BUILT-IN HTTP KEEP-ALIVE SERVER (No Flask / No Crash)
 # ==================================================
-app = Flask('')
+class HealthCheckHandler(BaseHTTPRequestHandler):
+
+  def do_GET(self):
+    self.send_response(200)
+    self.send_header('Content-type', 'text/html')
+    self.end_headers()
+    self.wfile.write(b'Bot is running!')
+
+  def log_message(self, format, *args):
+    return  # Render logs পরিচ্ছন্ন রাখার জন্য বাড়তি লগ বন্ধ রাখা হয়েছে
 
 
-@app.route('/')
-def home():
-  return 'Bot is running!'
-
-
-def run():
+def start_health_server():
   port = int(os.environ.get('PORT', 8080))
-  app.run(host='0.0.0.0', port=port)
+  server = HTTPServer(('0.0.0.0', port), HealthCheckHandler)
+  server.serve_forever()
 
 
-threading.Thread(target=run, daemon=True).start()
+# ব্যাকগ্রাউন্ড থ্রেডে HTTP সার্ভার চালু
+threading.Thread(target=start_health_server, daemon=True).start()
 
 # ==================================================
 # BOT CONFIGURATION & ADMIN ID
 # ==================================================
-# Render Environment Variable থেকে টোকেন নেবে
 BOT_TOKEN = os.environ.get('BOT_TOKEN')
 ADMIN_ID = 7132512163  # আপনার টেলিগ্রাম আইডি
 
@@ -343,14 +349,12 @@ async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE):
 
 
 # ==================================================
-# MAIN
+# MAIN FUNCTION
 # ==================================================
 def main():
   if not BOT_TOKEN:
-    raise RuntimeError(
-        "BOT_TOKEN পাওয়া যায়নি! দয়া করে Render Environment Variables-এ"
-        ' BOT_TOKEN সেট করুন।'
-    )
+    logger.error('BOT_TOKEN is missing in Render Environment!')
+    return
 
   app = Application.builder().token(BOT_TOKEN).build()
 
