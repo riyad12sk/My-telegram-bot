@@ -45,8 +45,8 @@ REQUIRED_CHANNELS = [
     },
     {
         "name": "📢 Channel 2",
-        "chat_id": "@skbeveloper",
-        "url": "https://t.me/skbeveloper",
+        "chat_id": "@hotgolp12",
+        "url": "https://t.me/hotgolp12",
     },
     {
         "name": "📢 Channel 3",
