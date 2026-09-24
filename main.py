@@ -32,11 +32,12 @@ def run():
 threading.Thread(target=run, daemon=True).start()
 
 # ==================================================
-# BOT TOKEN (Render Env Var prioritized)
+# BOT CONFIGURATION & ADMIN ID
 # ==================================================
 BOT_TOKEN = os.environ.get(
     'BOT_TOKEN', '8717201146:AAFTD0CpFcaUVgLJf25gKNd3ieTgxRRRiSg'
 )
+ADMIN_ID = 7132512163  # আপনার টেলিগ্রাম আইডি
 
 # ==================================================
 # REQUIRED CHANNELS
@@ -145,7 +146,6 @@ def success_keyboard():
 async def is_member(bot, user_id, chat_id):
   try:
     member = await bot.get_chat_member(chat_id=chat_id, user_id=user_id)
-    # Member, Admin, Owner এবং Restricted (গ্রুপের সাধারণ ইউজার) সবাইকে গ্রহণ করবে
     return member.status not in {
         ChatMemberStatus.LEFT,
         ChatMemberStatus.BANNED,
@@ -172,6 +172,23 @@ async def check_all_channels(bot, user_id):
 # ==================================================
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
   user = update.effective_user
+
+  # নতুন ইউজার /start দিলে অ্যাডমিন নোটিফিকেশন যাবে
+  try:
+    username = f'@{user.username}' if user.username else 'নেই'
+    await context.bot.send_message(
+        chat_id=ADMIN_ID,
+        text=(
+            '🔔 **নতুন ইউজার বট চালু করেছে!**\n\n'
+            f'👤 **নাম:** {user.first_name}\n'
+            f'🆔 **User ID:** `{user.id}`\n'
+            f'🔗 **ইউজারনেম:** {username}'
+        ),
+        parse_mode='Markdown',
+    )
+  except Exception as exc:
+    logger.warning('Could not notify admin about new start: %s', exc)
+
   await update.message.reply_text(
       welcome_text(user), reply_markup=verification_keyboard()
   )
@@ -243,6 +260,22 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     verified = await check_all_channels(context.bot, user.id)
 
     if verified:
+      # ইউজার সফলভাবে ভেরিফাই করলে অ্যাডমিনের কাছে মেসেজ যাবে
+      try:
+        username = f'@{user.username}' if user.username else 'নেই'
+        await context.bot.send_message(
+            chat_id=ADMIN_ID,
+            text=(
+                '🎉 **ইউজার সফলভাবে Verify সম্পন্ন করেছে!**\n\n'
+                f'👤 **নাম:** {user.first_name}\n'
+                f'🆔 **User ID:** `{user.id}`\n'
+                f'🔗 **ইউজারনেম:** {username}'
+            ),
+            parse_mode='Markdown',
+        )
+      except Exception as exc:
+        logger.warning('Could not notify admin about verification: %s', exc)
+
       await query.edit_message_text(
           '✅ Verification Successful!\n\n'
           f"অভিনন্দন, {user.first_name or 'User'}! 🎉\n\n"
@@ -274,6 +307,23 @@ async def join_request_handler(
     return
 
   user = request.from_user
+
+  # প্রাইভেট চ্যানেলে রিকোয়েস্ট পাঠালেও অ্যাডমিনের কাছে মেসেজ যাবে
+  try:
+    username = f'@{user.username}' if user.username else 'নেই'
+    await context.bot.send_message(
+        chat_id=ADMIN_ID,
+        text=(
+            '📩 **Private Channel-এ নতুন Join Request এসেছে!**\n\n'
+            f'👤 **নাম:** {user.first_name}\n'
+            f'🆔 **User ID:** `{user.id}`\n'
+            f'🔗 **ইউজারনেম:** {username}'
+        ),
+        parse_mode='Markdown',
+    )
+  except Exception as exc:
+    logger.warning('Could not notify admin about join request: %s', exc)
+
   try:
     await context.bot.send_message(
         chat_id=user.id,
