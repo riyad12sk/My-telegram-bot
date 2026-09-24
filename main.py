@@ -55,8 +55,8 @@ REQUIRED_CHANNELS = [
     },
     {
         'name': '📢 Channel 3',
-        'chat_id': '@viral_video543',
-        'url': 'https://t.me/viral_video543',
+        'chat_id': '@viral_video1538',
+        'url': 'https://t.me/viral_video1538',
     },
     {
         'name': '📢 Channel 4',
