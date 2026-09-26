@@ -65,8 +65,8 @@ REQUIRED_CHANNELS = [
     },
     {
         'name': '📢 Channel 4',
-        'chat_id': '@gmfmmmm',
-        'url': 'https://t.me/gmfmmmm',
+        'chat_id': '@sk_black_cat',
+        'url': 'https://t.me/sk_black_cat',
     },
 ]
 
