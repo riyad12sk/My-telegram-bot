@@ -74,7 +74,7 @@ REQUIRED_CHANNELS = [
 # PRIVATE CHANNEL
 # ==================================================
 PRIVATE_CHANNEL_ID = -1004358649143
-PRIVATE_CHANNEL_URL = 'https://t.me/+vDYw2pQRl6hmZTQ1'
+PRIVATE_CHANNEL_URL = 'https://t.me/hotvideo_14'
 
 # ==================================================
 # LOGGING
